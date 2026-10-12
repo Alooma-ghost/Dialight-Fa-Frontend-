@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Photo } from '../types';
-import { api, DEFAULT_PLACEHOLDERS } from '../services/api';
+import { api } from '../services/api';
 import { Camera, Image } from 'lucide-react';
 
 type Category = 'all' | 'match' | 'train' | 'team' | 'alumni';
@@ -29,7 +29,7 @@ const CATEGORY_COLORS: Record<string, { bg: string; color: string }> = {
 
 export const GalleryPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
-  const [photos, setPhotos] = useState<Photo[]>(DEFAULT_PLACEHOLDERS);
+  const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState<Photo | null>(null);
   const [usingReal, setUsingReal] = useState(false);

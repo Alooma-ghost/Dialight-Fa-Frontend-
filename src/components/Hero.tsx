@@ -133,54 +133,101 @@ export const Hero: React.FC<HeroProps> = ({ match, onNavigate }) => {
             </div>
           </div>
 
-          {/* Right Column: Live Matchcard & Matchday Focus */}
+          {/* Right Column: Live Matchcard or Training Info */}
           <div>
-            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#C5D6F5', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Matchday Live Center
-              </span>
-              <button
-                onClick={() => onNavigate('matches')}
-                style={{ fontSize: 13, color: '#5B86D6', fontWeight: 700 }}
-              >
-                All Fixtures →
-              </button>
-            </div>
-
-            <LiveScoreCard match={match} />
+            {match.homeTeam ? (
+              <>
+                <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#C5D6F5', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Matchday Live Center
+                  </span>
+                  <button
+                    onClick={() => onNavigate('matches')}
+                    style={{ fontSize: 13, color: '#5B86D6', fontWeight: 700 }}
+                  >
+                    All Fixtures →
+                  </button>
+                </div>
+                <LiveScoreCard match={match} />
+              </>
+            ) : (
+              <div style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 20,
+                padding: '32px 28px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 20
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                  <span style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    color: '#9FB0D0',
+                    fontSize: 12, fontWeight: 800,
+                    textTransform: 'uppercase', letterSpacing: '0.08em',
+                    padding: '4px 12px', borderRadius: 99
+                  }}>No Match Today</span>
+                </div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>
+                  Next Training Session
+                </div>
+                {[
+                  { squad: 'U10 & U13', time: '3:00 PM – 5:00 PM' },
+                  { squad: 'U17 & Free Age', time: '4:00 PM – 6:00 PM' }
+                ].map((s, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span style={{ fontWeight: 600, color: '#C5D6F5', fontSize: 14 }}>{s.squad}</span>
+                    <span style={{ background: 'rgba(31,157,85,0.2)', color: '#4ADE80', fontWeight: 800, fontSize: 13, padding: '3px 12px', borderRadius: 99 }}>{s.time}</span>
+                  </div>
+                ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#9FB0D0', fontSize: 13 }}>
+                  <MapPin size={15} color="#FFD700" />
+                  <span>Mon, Wed & Fri · Adura Field, Alagbado</span>
+                </div>
+                <button
+                  onClick={() => onNavigate('matches')}
+                  style={{ marginTop: 4, fontSize: 14, color: '#5B86D6', fontWeight: 700, textAlign: 'left' }}
+                >
+                  View fixtures & results →
+                </button>
+              </div>
+            )}
 
             {/* Quick Training Schedule Badge */}
-            <div
-              style={{
-                marginTop: 20,
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: 14,
-                padding: '16px 20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14
-              }}
-            >
+            {match.homeTeam && (
               <div
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 10,
-                  background: 'rgba(31, 157, 85, 0.2)',
-                  color: '#1F9D55',
-                  display: 'grid',
-                  placeItems: 'center',
-                  flexShrink: 0
+                  marginTop: 20,
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: 14,
+                  padding: '16px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 14
                 }}
               >
-                <MapPin size={20} />
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    background: 'rgba(31, 157, 85, 0.2)',
+                    color: '#1F9D55',
+                    display: 'grid',
+                    placeItems: 'center',
+                    flexShrink: 0
+                  }}
+                >
+                  <MapPin size={20} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>Adura Field, Alagbado</div>
+                  <div style={{ fontSize: 13, color: '#9FB0D0' }}>Training: Mon, Wed & Fri · 3–5 PM (U10/U13) & 4–6 PM (U17/Senior)</div>
+                </div>
               </div>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 15, color: '#fff' }}>Adura Field, Alagbado</div>
-                <div style={{ fontSize: 13, color: '#9FB0D0' }}>Training: Mon, Wed & Fri · 3–5 PM (U10/U13) & 4–6 PM (U17/Senior)</div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

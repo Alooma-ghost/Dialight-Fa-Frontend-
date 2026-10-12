@@ -35,13 +35,15 @@ export const MatchesPage: React.FC<MatchesPageProps> = ({ match }) => {
           </p>
         </div>
 
-        {/* Live Score Card */}
-        <div style={{ marginBottom: 56 }}>
-          <h2 style={{ fontSize: 20, color: '#0A2352', marginBottom: 16 }}>Current Match</h2>
-          <div style={{ maxWidth: 600 }}>
-            <LiveScoreCard match={match} />
+        {/* Live Score Card - only when a match is active */}
+        {match.homeTeam && (
+          <div style={{ marginBottom: 56 }}>
+            <h2 style={{ fontSize: 20, color: '#0A2352', marginBottom: 16 }}>Current Match</h2>
+            <div style={{ maxWidth: 600 }}>
+              <LiveScoreCard match={match} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Upcoming Fixtures */}
         {upcoming.length > 0 && (

@@ -27,82 +27,26 @@ const getBaseUrl = (): string => {
   return '';
 };
 
-// Fallback initial data
+// Fallback – no demo data, all empty until admin posts real content
 export const FALLBACK_MATCH: Match = {
-  homeTeam: 'Dialight U17',
-  awayTeam: 'Opponent FC',
-  homeShort: 'DFA',
-  awayShort: 'OPP',
-  homeScore: 2,
-  awayScore: 1,
-  status: 'Live',
-  minute: "63'",
-  competition: 'Lagos Grassroots League',
-  sofaScoreUrl: 'https://www.sofascore.com',
-  note: 'Live scores update pitchside from our coaching staff.'
+  homeTeam: '',
+  awayTeam: '',
+  homeShort: '',
+  awayShort: '',
+  homeScore: null,
+  awayScore: null,
+  status: 'No Match',
+  minute: '',
+  competition: '',
+  sofaScoreUrl: '',
+  note: ''
 };
 
-export const FALLBACK_FIXTURES: Fixture[] = [
-  {
-    id: 'f1',
-    date: 'Sat 17 Oct',
-    time: '3:00 pm',
-    homeTeam: 'Dialight U13',
-    awayTeam: 'First Touch FA',
-    competition: 'Youth Cup',
-    status: 'Upcoming',
-    result: '3:00 pm'
-  },
-  {
-    id: 'f2',
-    date: 'Sat 24 Oct',
-    time: '4:00 pm',
-    homeTeam: 'Dialight U17',
-    awayTeam: 'Golden Stars FC',
-    competition: 'Lagos Youth League',
-    status: 'Upcoming',
-    result: '4:00 pm'
-  },
-  {
-    id: 'f3',
-    date: 'Sat 3 Oct',
-    time: '2:00 pm',
-    homeTeam: 'Dialight Free Age',
-    awayTeam: 'Alagbado United',
-    competition: 'Senior Friendly',
-    status: 'Completed',
-    result: 'W 2–0',
-    isResult: true
-  }
-];
+export const FALLBACK_FIXTURES: Fixture[] = [];
 
-export const FALLBACK_VIDEOS: Video[] = [
-  {
-    id: 'v1',
-    title: 'U17 League Highlights: Dialight 2–1 Opponent FC',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    youtubeId: 'dQw4w9WgXcQ',
-    category: 'highlight',
-    caption: 'Matchday highlights from the thrilling U17 victory.'
-  },
-  {
-    id: 'v2',
-    title: 'Midfield Transition Drills · Morning Session',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    youtubeId: 'dQw4w9WgXcQ',
-    category: 'training',
-    caption: 'Tactical positioning and quick ball movement at Adura Field.'
-  },
-  {
-    id: 'v3',
-    title: 'Striker Finishing & Movement Inside the Box',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    youtubeId: 'dQw4w9WgXcQ',
-    category: 'training',
-    caption: 'First-time finishing drills with our Under-17 squad.'
-  }
-];
+export const FALLBACK_VIDEOS: Video[] = [];
 
+// Alumni photos are real records, kept as static data
 export const DEFAULT_PLACEHOLDERS: Photo[] = [
   {
     id: 'p-alumni-1',
@@ -119,78 +63,6 @@ export const DEFAULT_PLACEHOLDERS: Photo[] = [
     url: '/alumni/fabiola-gideon.jpg',
     caption: 'Dialight FA star alumnus Fabiola Gideon celebrating. Represented Nigeria at Under-17 level and played for Giant Brillars FC.',
     layout: 'span-2'
-  },
-  {
-    id: 'p1',
-    title: 'U17 Match Day Action',
-    category: 'match',
-    url: '',
-    caption: 'Dialight U17 attacking the opponent defensive third.',
-    layout: 'span-2 row-2'
-  },
-  {
-    id: 'p2',
-    title: 'Morning Drills & Conditioning',
-    category: 'train',
-    url: '',
-    caption: 'Speed, agility and ball coordination at Adura field.',
-    layout: ''
-  },
-  {
-    id: 'p3',
-    title: 'Under-10 Grassroots Squad',
-    category: 'team',
-    url: '',
-    caption: 'Our youngest future champions learning fundamentals.',
-    layout: ''
-  },
-  {
-    id: 'p4',
-    title: 'Free Age Senior Showcase',
-    category: 'match',
-    url: '',
-    caption: 'Free Age team competing in regional showcase tournament.',
-    layout: 'span-2'
-  },
-  {
-    id: 'p5',
-    title: 'Tactical Briefing Session',
-    category: 'train',
-    url: '',
-    caption: 'Pre-match strategy review with Head Coach Imole.',
-    layout: ''
-  },
-  {
-    id: 'p6',
-    title: 'Under-13 Championship Team',
-    category: 'team',
-    url: '',
-    caption: 'U13 squad celebrated after cup progression.',
-    layout: ''
-  },
-  {
-    id: 'p7',
-    title: 'Goal Celebration',
-    category: 'match',
-    url: '',
-    caption: 'Team unity after a crucial 88th-minute winning goal.',
-    layout: ''
-  },
-  {
-    id: 'p8',
-    title: 'Full Academy Assembly',
-    category: 'team',
-    url: '',
-    caption: 'Over 60 dedicated players developing at Dialight FA.',
-    layout: 'span-2'
-  },
-  {
-    id: 'p9',
-    title: 'Speed & Agility Workshop',
-    category: 'train',
-    url: '',
-    caption: 'Physical performance testing under coach supervision.',
-    layout: ''
   }
 ];
 
@@ -266,7 +138,11 @@ export const api = {
         if (list && list.length > 0) return list;
       }
     } catch (_) {}
-    return DEFAULT_PLACEHOLDERS.filter(p => !category || category === 'all' || p.category === category);
+    // Return alumni placeholders for alumni filter/all, empty for other categories
+    if (!category || category === 'all' || category === 'alumni') {
+      return DEFAULT_PLACEHOLDERS.filter(p => !category || category === 'all' || p.category === category);
+    }
+    return [];
   },
 
   getVideos: async (): Promise<Video[]> => {
