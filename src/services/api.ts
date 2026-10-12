@@ -19,7 +19,11 @@ export const SOCIAL_LINKS = {
 const getBaseUrl = (): string => {
   const saved = localStorage.getItem('dfa_api_url');
   if (saved) return saved.replace(/\/+$/, '');
-  // Default to empty for relative /api (proxied by Vite or same-origin)
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) return envUrl.replace(/\/+$/, '');
+  if (import.meta.env.PROD) {
+    return 'https://dialight-fa-backend.onrender.com';
+  }
   return '';
 };
 
