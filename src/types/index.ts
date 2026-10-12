@@ -5,9 +5,9 @@ export interface Match {
   awayTeam: string;
   homeShort: string;
   awayShort: string;
-  homeScore: number;
-  awayScore: number;
-  status: 'Live' | 'Upcoming' | 'Full Time' | 'Half Time';
+  homeScore: number | null;
+  awayScore: number | null;
+  status: 'Live' | 'Upcoming' | 'Full Time' | 'Half Time' | 'No Match';
   minute: string;
   competition: string;
   date?: string;

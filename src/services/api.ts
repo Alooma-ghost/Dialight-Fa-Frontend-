@@ -87,16 +87,7 @@ export const FALLBACK_NEWS: NewsItem[] = [
     location: 'Adura Field, Alagbado, Lagos',
     badge: 'Trials Open'
   },
-  {
-    id: 'n3',
-    title: 'Matchday Showcase: Dialight FA U17 vs Golden Stars FC',
-    content: 'Our U17 championship squad prepares for the upcoming Lagos Grassroots League showcase match this weekend at Adura Field.',
-    category: 'Match',
-    date: 'Sat, 17 Oct 2026',
-    time: '3:00 PM',
-    location: 'Adura Field, Alagbado, Lagos',
-    badge: 'Upcoming Fixture'
-  },
+
   {
     id: 'n4',
     title: 'Academy Ground Location Guide: Under the Powerline, Adura Field',
