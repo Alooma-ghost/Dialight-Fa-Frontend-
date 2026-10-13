@@ -21,19 +21,6 @@ function getCategoryStyle(cat?: string) {
   return CATEGORY_STYLES[cat || ""] || { bg: "#F0F4FC", color: "#475569" };
 }
 
-// Fallback high-res academy alumni images so every card has a full photo like Alumni cards
-const FALLBACK_NEWS_IMAGES = [
-  "/alumni/opebi-ibrahim.jpg",
-  "/alumni/fabiola-gideon.jpg",
-];
-
-function getCardImage(item: NewsItem, index: number): string {
-  if (item.attachmentUrl && isImageAttachment(item.attachmentUrl)) {
-    return resolveMediaUrl(item.attachmentUrl);
-  }
-  return FALLBACK_NEWS_IMAGES[index % FALLBACK_NEWS_IMAGES.length];
-}
-
 export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
@@ -121,7 +108,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
           })}
         </div>
 
-        {/* ══ News Cards Grid — Exactly matching Alumni cards layout ══ */}
+        {/* ══ News Cards Grid ══ */}
         {filteredNews.length === 0 ? (
           <div style={{
             textAlign: "center", padding: "60px 20px", background: "#ffffff",
@@ -142,11 +129,249 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
             gap: 32,
             marginBottom: 48,
           }}>
-            {filteredNews.map((item, index) => {
-              const cardImgSrc = getCardImage(item, index);
-              const isRealImgAttachment = !!item.attachmentUrl && isImageAttachment(item.attachmentUrl);
-              const isDocAttachment = !!item.attachmentUrl && !isRealImgAttachment;
+            {filteredNews.map((item) => {
+              const hasImage = !!item.attachmentUrl && isImageAttachment(item.attachmentUrl);
+              const imageUrl = hasImage ? resolveMediaUrl(item.attachmentUrl) : "";
+              const isDocAttachment = !!item.attachmentUrl && !hasImage;
+              const catStyle = getCategoryStyle(item.category);
 
+              /* ── CASE 1: NEWS WITH PICTURE (FULL ALUMNI CARD STYLE) ── */
+              if (hasImage) {
+                return (
+                  <div
+                    key={item.id}
+                    className="news-card"
+                    style={{
+                      background: "#ffffff",
+                      borderRadius: 24,
+                      overflow: "hidden",
+                      border: "1.5px solid #D6E0F2",
+                      boxShadow: "0 16px 40px rgba(10, 35, 82, 0.08)",
+                      display: "flex",
+                      flexDirection: "column",
+                      transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+                    }}
+                  >
+                    {/* Full-portrait 3:4 photo exactly like Alumni card */}
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        aspectRatio: "3 / 4",
+                        background: "#0A1A3A",
+                        overflow: "hidden",
+                        cursor: "zoom-in",
+                      }}
+                      onClick={() => setLightboxUrl(imageUrl)}
+                      title="Click to view full picture"
+                    >
+                      <img
+                        src={imageUrl}
+                        alt={item.title}
+                        className="news-img"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center center",
+                          transition: "transform 0.4s ease",
+                          display: "block",
+                        }}
+                        loading="lazy"
+                      />
+
+                      {/* Zoom hint top-right */}
+                      <div style={{
+                        position: "absolute", top: 14, right: 14,
+                        background: "rgba(255,255,255,0.16)", backdropFilter: "blur(6px)",
+                        border: "1px solid rgba(255,255,255,0.22)", color: "#fff",
+                        borderRadius: 8, padding: "5px 8px", fontSize: 11, fontWeight: 700,
+                        display: "flex", alignItems: "center", gap: 4, pointerEvents: "none",
+                        zIndex: 2,
+                      }}>
+                        <ZoomIn size={13} /> Full View
+                      </div>
+
+                      {/* Gradient overlay */}
+                      <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "linear-gradient(to top, rgba(6, 22, 53, 0.95) 0%, rgba(6, 22, 53, 0.3) 50%, transparent 100%)",
+                        pointerEvents: "none",
+                      }} />
+
+                      {/* Badge top-left */}
+                      <div style={{
+                        position: "absolute",
+                        top: 16,
+                        left: 16,
+                        background: "rgba(6, 22, 53, 0.85)",
+                        backdropFilter: "blur(8px)",
+                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                        color: "#FFD700",
+                        padding: "5px 12px",
+                        borderRadius: 99,
+                        fontSize: 12,
+                        fontWeight: 800,
+                        letterSpacing: "0.04em",
+                        textTransform: "uppercase",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        zIndex: 2,
+                      }}>
+                        <Star size={13} fill="#FFD700" /> {item.badge || item.category || "Dialight FA Official"}
+                      </div>
+
+                      {/* Title & category overlay at bottom */}
+                      <div style={{
+                        position: "absolute",
+                        bottom: 16,
+                        left: 20,
+                        right: 20,
+                        zIndex: 2,
+                      }}>
+                        <div style={{
+                          fontSize: 12,
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          color: "#4ADE80",
+                          letterSpacing: "0.06em",
+                          marginBottom: 4,
+                        }}>
+                          {item.category} &bull; {item.date}
+                        </div>
+                        <h3 style={{
+                          color: "#ffffff",
+                          fontSize: 22,
+                          fontWeight: 900,
+                          margin: 0,
+                          letterSpacing: "0.01em",
+                          lineHeight: 1.3,
+                        }}>
+                          {item.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Content body below photo */}
+                    <div style={{
+                      padding: "24px 22px",
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                    }}>
+                      <div>
+                        {/* Meta info */}
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 14,
+                          fontSize: 13,
+                          color: "#64748B",
+                          marginBottom: 14,
+                          flexWrap: "wrap",
+                        }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                            <Calendar size={14} color="#1448A8" />
+                            <span>{item.date}</span>
+                          </div>
+                          {item.time && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                              <Clock size={14} color="#1448A8" />
+                              <span>{item.time}</span>
+                            </div>
+                          )}
+                          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                            <MapPin size={14} color="#1F9D55" />
+                            <span>{item.location || "Adura Field, Alagbado"}</span>
+                          </div>
+                        </div>
+
+                        {/* Excerpt */}
+                        {item.content && (
+                          <p style={{
+                            fontSize: 14.5,
+                            color: "#475569",
+                            lineHeight: 1.65,
+                            marginBottom: 18,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}>
+                            {item.content}
+                          </p>
+                        )}
+
+                        {/* Actions */}
+                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+                          <button
+                            onClick={() => setSelectedNews(item)}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              padding: "10px 18px",
+                              borderRadius: 10,
+                              background: "#0A2352",
+                              color: "#fff",
+                              fontWeight: 700,
+                              fontSize: 13,
+                              border: "none",
+                              cursor: "pointer",
+                              transition: "background 0.2s",
+                            }}
+                          >
+                            <span>Read Full Story</span>
+                            <ChevronRight size={15} />
+                          </button>
+
+                          <button
+                            onClick={() => setLightboxUrl(imageUrl)}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              padding: "10px 16px",
+                              borderRadius: 10,
+                              background: "#F1F5F9",
+                              color: "#0A2352",
+                              fontWeight: 700,
+                              fontSize: 13,
+                              border: "1.5px solid #CBD5E1",
+                              cursor: "pointer",
+                              transition: "background 0.2s",
+                            }}
+                          >
+                            <ZoomIn size={14} /> View Full Photo
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Footer verification badge */}
+                      <div style={{
+                        paddingTop: 12,
+                        borderTop: "1px solid #EEF2F9",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        fontSize: 12,
+                        color: "#64748B",
+                      }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                          <Shield size={14} color="#1F9D55" />
+                          <span>Official Dialight FA Update</span>
+                        </div>
+                        <span style={{ fontWeight: 700, color: "#1448A8" }}>Adura Field Ground</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              /* ── CASE 2: DEFAULT NEWS WITH NO PICTURE ── */
               return (
                 <div
                   key={item.id}
@@ -154,242 +379,151 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
                   style={{
                     background: "#ffffff",
                     borderRadius: 24,
-                    overflow: "hidden",
                     border: "1.5px solid #D6E0F2",
                     boxShadow: "0 16px 40px rgba(10, 35, 82, 0.08)",
-                    display: "flex",
-                    flexDirection: "column",
-                    transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
-                  }}
-                >
-                  {/* ── Full-portrait 3:4 photo exactly like Alumni card ── */}
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      aspectRatio: "3 / 4",
-                      background: "#0A1A3A",
-                      overflow: "hidden",
-                      cursor: "zoom-in",
-                    }}
-                    onClick={() => setLightboxUrl(cardImgSrc)}
-                    title="Click to view full picture"
-                  >
-                    <img
-                      src={cardImgSrc}
-                      alt={item.title}
-                      className="news-img"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        objectPosition: "center center",
-                        transition: "transform 0.4s ease",
-                        display: "block",
-                      }}
-                      loading="lazy"
-                      onError={(e) => {
-                        // Fallback to alumni image if image fails
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.src = FALLBACK_NEWS_IMAGES[index % FALLBACK_NEWS_IMAGES.length];
-                      }}
-                    />
-
-                    {/* Zoom hint top-right */}
-                    <div style={{
-                      position: "absolute", top: 14, right: 14,
-                      background: "rgba(255,255,255,0.16)", backdropFilter: "blur(6px)",
-                      border: "1px solid rgba(255,255,255,0.22)", color: "#fff",
-                      borderRadius: 8, padding: "5px 8px", fontSize: 11, fontWeight: 700,
-                      display: "flex", alignItems: "center", gap: 4, pointerEvents: "none",
-                      zIndex: 2,
-                    }}>
-                      <ZoomIn size={13} /> Full View
-                    </div>
-
-                    {/* Gradient overlay */}
-                    <div style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "linear-gradient(to top, rgba(6, 22, 53, 0.95) 0%, rgba(6, 22, 53, 0.3) 50%, transparent 100%)",
-                      pointerEvents: "none",
-                    }} />
-
-                    {/* Badge top-left */}
-                    <div style={{
-                      position: "absolute",
-                      top: 16,
-                      left: 16,
-                      background: "rgba(6, 22, 53, 0.85)",
-                      backdropFilter: "blur(8px)",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      color: "#FFD700",
-                      padding: "5px 12px",
-                      borderRadius: 99,
-                      fontSize: 12,
-                      fontWeight: 800,
-                      letterSpacing: "0.04em",
-                      textTransform: "uppercase",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 5,
-                      zIndex: 2,
-                    }}>
-                      <Star size={13} fill="#FFD700" /> {item.badge || item.category || "Dialight FA Official"}
-                    </div>
-
-                    {/* Title & category on bottom of photo overlay */}
-                    <div style={{
-                      position: "absolute",
-                      bottom: 16,
-                      left: 20,
-                      right: 20,
-                      zIndex: 2,
-                    }}>
-                      <div style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        color: "#4ADE80",
-                        letterSpacing: "0.06em",
-                        marginBottom: 4,
-                      }}>
-                        {item.category} &bull; {item.date}
-                      </div>
-                      <h3 style={{
-                        color: "#ffffff",
-                        fontSize: 22,
-                        fontWeight: 900,
-                        margin: 0,
-                        letterSpacing: "0.01em",
-                        lineHeight: 1.3,
-                      }}>
-                        {item.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* ── Content Body exactly like Alumni card ── */}
-                  <div style={{
-                    padding: "26px 24px",
-                    flex: 1,
+                    padding: "28px 24px",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
-                  }}>
-                    <div>
-                      {/* Meta: Location, Time */}
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease",
+                  }}
+                >
+                  <div>
+                    {/* Header: Category Badge + Date */}
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 10,
+                      marginBottom: 16,
+                      flexWrap: "wrap",
+                    }}>
+                      <span style={{
+                        fontSize: 12,
+                        fontWeight: 800,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        padding: "5px 14px",
+                        borderRadius: 99,
+                        background: catStyle.bg,
+                        color: catStyle.color,
+                      }}>
+                        {item.badge || item.category || "Announcement"}
+                      </span>
+
                       <div style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: 14,
+                        gap: 6,
                         fontSize: 13,
                         color: "#64748B",
-                        marginBottom: 14,
-                        flexWrap: "wrap",
+                        fontWeight: 600,
                       }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <Calendar size={14} color="#1448A8" />
-                          <span>{item.date}</span>
-                        </div>
-                        {item.time && (
-                          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                            <Clock size={14} color="#1448A8" />
-                            <span>{item.time}</span>
-                          </div>
-                        )}
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <MapPin size={14} color="#1F9D55" />
-                          <span>{item.location || "Adura Field, Alagbado"}</span>
-                        </div>
+                        <Calendar size={14} color="#1448A8" />
+                        <span>{item.date}</span>
                       </div>
+                    </div>
 
-                      {/* Excerpt Story */}
-                      {item.content && (
-                        <p style={{
-                          fontSize: 14.5,
-                          color: "#475569",
-                          lineHeight: 1.65,
+                    {/* Headline Title */}
+                    <h3 style={{
+                      fontSize: 21,
+                      fontWeight: 900,
+                      color: "#0A2352",
+                      lineHeight: 1.35,
+                      marginBottom: 12,
+                    }}>
+                      {item.title}
+                    </h3>
+
+                    {/* Meta Info: Time & Location */}
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 16,
+                      fontSize: 13,
+                      color: "#64748B",
+                      marginBottom: 16,
+                      flexWrap: "wrap",
+                    }}>
+                      {item.time && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                          <Clock size={14} color="#1448A8" />
+                          <span>{item.time}</span>
+                        </div>
+                      )}
+                      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <MapPin size={14} color="#1F9D55" />
+                        <span>{item.location || "Adura Field, Alagbado"}</span>
+                      </div>
+                    </div>
+
+                    {/* Content excerpt */}
+                    {item.content && (
+                      <p style={{
+                        fontSize: 14.5,
+                        color: "#475569",
+                        lineHeight: 1.7,
+                        marginBottom: 20,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 4,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}>
+                        {item.content}
+                      </p>
+                    )}
+
+                    {/* Document attachment if any non-image */}
+                    {isDocAttachment && (
+                      <a
+                        href={resolveMediaUrl(item.attachmentUrl)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "10px 14px",
+                          borderRadius: 10,
+                          background: "#F0F4FC",
+                          color: "#1448A8",
+                          fontWeight: 700,
+                          fontSize: 13,
+                          textDecoration: "none",
                           marginBottom: 18,
-                          display: "-webkit-box",
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                        }}>
-                          {item.content}
-                        </p>
-                      )}
+                          border: "1px solid #D6E0F2",
+                        }}
+                      >
+                        <Paperclip size={15} />
+                        <span>{item.attachmentName || "View Document Attachment"}</span>
+                        <ExternalLink size={13} style={{ marginLeft: "auto" }} />
+                      </a>
+                    )}
+                  </div>
 
-                      {/* Document attachment if not an image */}
-                      {isDocAttachment && (
-                        <a
-                          href={resolveMediaUrl(item.attachmentUrl)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            padding: "10px 14px",
-                            borderRadius: 10,
-                            background: "#F0F4FC",
-                            color: "#1448A8",
-                            fontWeight: 700,
-                            fontSize: 13,
-                            textDecoration: "none",
-                            marginBottom: 16,
-                            border: "1px solid #D6E0F2",
-                          }}
-                        >
-                          <Paperclip size={15} />
-                          <span>{item.attachmentName || "View Document Attachment"}</span>
-                          <ExternalLink size={13} style={{ marginLeft: "auto" }} />
-                        </a>
-                      )}
-
-                      {/* Action buttons */}
-                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 18 }}>
-                        <button
-                          onClick={() => setSelectedNews(item)}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 6,
-                            padding: "10px 18px",
-                            borderRadius: 10,
-                            background: "#0A2352",
-                            color: "#fff",
-                            fontWeight: 700,
-                            fontSize: 13,
-                            border: "none",
-                            cursor: "pointer",
-                            transition: "background 0.2s",
-                          }}
-                        >
-                          <span>Read Full Story</span>
-                          <ChevronRight size={15} />
-                        </button>
-
-                        <button
-                          onClick={() => setLightboxUrl(cardImgSrc)}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 6,
-                            padding: "10px 16px",
-                            borderRadius: 10,
-                            background: "#F1F5F9",
-                            color: "#0A2352",
-                            fontWeight: 700,
-                            fontSize: 13,
-                            border: "1.5px solid #CBD5E1",
-                            cursor: "pointer",
-                            transition: "background 0.2s",
-                          }}
-                        >
-                          <ZoomIn size={14} /> View Full Photo
-                        </button>
-                      </div>
+                  <div>
+                    {/* Read Full Details button */}
+                    <div style={{ marginBottom: 16 }}>
+                      <button
+                        onClick={() => setSelectedNews(item)}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          padding: "11px 20px",
+                          borderRadius: 10,
+                          background: "#0A2352",
+                          color: "#fff",
+                          fontWeight: 700,
+                          fontSize: 13.5,
+                          border: "none",
+                          cursor: "pointer",
+                          transition: "background 0.2s",
+                        }}
+                      >
+                        <span>Read Full Details</span>
+                        <ChevronRight size={16} />
+                      </button>
                     </div>
 
                     {/* Footer verification badge */}
@@ -496,9 +630,10 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
 
       {/* ══ Detail Modal ════════════════════════════════════════════════════ */}
       {selectedNews && (() => {
-        const modalImgSrc = getCardImage(selectedNews, 0);
+        const hasModalImage = !!selectedNews.attachmentUrl && isImageAttachment(selectedNews.attachmentUrl);
+        const modalImgSrc = hasModalImage ? resolveMediaUrl(selectedNews.attachmentUrl) : "";
         const catStyle = getCategoryStyle(selectedNews.category);
-        const isDocAttachment = !!selectedNews.attachmentUrl && !isImageAttachment(selectedNews.attachmentUrl);
+        const isDocAttachment = !!selectedNews.attachmentUrl && !hasModalImage;
 
         return (
           <div
@@ -533,29 +668,31 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
                 <X size={20} color="#0A2352" />
               </button>
 
-              {/* Hero Image at top of Modal */}
-              <div
-                style={{
-                  position: "relative", width: "100%", aspectRatio: "16 / 9",
-                  background: "#0A1A3A", overflow: "hidden", cursor: "zoom-in",
-                }}
-                onClick={() => setLightboxUrl(modalImgSrc)}
-                title="Click to view full photo"
-              >
-                <img
-                  src={modalImgSrc}
-                  alt={selectedNews.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-                <div style={{
-                  position: "absolute", bottom: 12, right: 14,
-                  background: "rgba(0,0,0,0.65)", color: "#fff",
-                  borderRadius: 8, padding: "5px 10px", fontSize: 12, fontWeight: 700,
-                  display: "flex", alignItems: "center", gap: 5,
-                }}>
-                  <ZoomIn size={13} /> View Full Picture
+              {/* Only show Image Hero if there is a real uploaded picture */}
+              {hasModalImage && (
+                <div
+                  style={{
+                    position: "relative", width: "100%", aspectRatio: "16 / 9",
+                    background: "#0A1A3A", overflow: "hidden", cursor: "zoom-in",
+                  }}
+                  onClick={() => setLightboxUrl(modalImgSrc)}
+                  title="Click to view full photo"
+                >
+                  <img
+                    src={modalImgSrc}
+                    alt={selectedNews.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                  <div style={{
+                    position: "absolute", bottom: 12, right: 14,
+                    background: "rgba(0,0,0,0.65)", color: "#fff",
+                    borderRadius: 8, padding: "5px 10px", fontSize: 12, fontWeight: 700,
+                    display: "flex", alignItems: "center", gap: 5,
+                  }}>
+                    <ZoomIn size={13} /> View Full Picture
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Modal Body */}
               <div style={{ padding: "30px 28px 26px" }}>
@@ -649,7 +786,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
         );
       })()}
 
-      {/* ══ FULL-SCREEN LIGHTBOX — exactly like Alumni section lightbox ══ */}
+      {/* ══ FULL-SCREEN LIGHTBOX ══ */}
       {lightboxUrl && (
         <div
           onClick={() => setLightboxUrl(null)}

@@ -90,8 +90,7 @@ export const FALLBACK_NEWS: NewsItem[] = [
     date: 'Mon, 12 Oct 2026',
     time: '3:00 PM – 6:00 PM',
     location: 'Adura Field, Alagbado, Lagos',
-    badge: 'Official Schedule',
-    attachmentUrl: '/alumni/fabiola-gideon.jpg'
+    badge: 'Official Schedule'
   },
   {
     id: 'n2',
@@ -101,8 +100,7 @@ export const FALLBACK_NEWS: NewsItem[] = [
     date: 'Mon, 12 Oct 2026',
     time: '3:00 PM – 6:00 PM',
     location: 'Adura Field, Alagbado, Lagos',
-    badge: 'Trials Open',
-    attachmentUrl: '/alumni/opebi-ibrahim.jpg'
+    badge: 'Trials Open'
   },
   {
     id: 'n4',
