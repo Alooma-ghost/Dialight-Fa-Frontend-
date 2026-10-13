@@ -126,7 +126,7 @@ export const GalleryPage: React.FC = () => {
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 20 }}>
             {[1, 2, 3, 4, 5, 6].map(i => (
               <div key={i} style={{ height: 220, borderRadius: 16, background: '#E8F0FC', animation: 'pulse 1.5s infinite' }} />
             ))}
@@ -140,7 +140,7 @@ export const GalleryPage: React.FC = () => {
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
             gap: 20
           }}>
             {filtered.map(photo => (

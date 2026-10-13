@@ -62,7 +62,7 @@ export const SquadsSection: React.FC<SquadsSectionProps> = ({ onNavigate }) => {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: 24 }}>
           {squads.map((s, idx) => (
             <div
               key={idx}

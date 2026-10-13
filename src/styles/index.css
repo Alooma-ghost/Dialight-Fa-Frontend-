@@ -44,15 +44,17 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
 }
 
-body {
+body, #root {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
   padding-bottom: var(--safe-bottom);
+  width: 100%;
 }
 
 h1, h2, h3, h4, h5 {
@@ -433,10 +435,12 @@ img {
     border-radius: 8px;
   }
   .brand-info h1 {
-    font-size: 15px;
+    font-size: clamp(13px, 3.8vw, 15px);
+    white-space: nowrap;
   }
   .brand-info span {
     font-size: 9px;
+    white-space: nowrap;
   }
   /* On small mobile, hide top whatsapp to give 100% clean space to brand + hamburger */
   .nav-cta-whatsapp {

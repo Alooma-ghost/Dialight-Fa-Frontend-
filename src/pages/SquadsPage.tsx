@@ -50,7 +50,7 @@ export const SquadsPage: React.FC<SquadsPageProps> = ({ onNavigate }) => {
                 <span>Speak with Head Coach</span>
               </a>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 16 }}>
               {[
                 { label: 'Technical Excellence', desc: 'Ball mastery, first touch, and 1v1 skills at every age.' },
                 { label: 'Tactical Intelligence', desc: 'Positional play, transitions, and game understanding.' },

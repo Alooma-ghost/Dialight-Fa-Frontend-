@@ -68,7 +68,7 @@ export const JoinPage: React.FC = () => {
   return (
     <div style={{ paddingTop: 100, minHeight: '100vh', background: '#F8FAFD' }}>
       <div className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 48, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 48, alignItems: 'start' }}>
 
           {/* Left: Info */}
           <div>

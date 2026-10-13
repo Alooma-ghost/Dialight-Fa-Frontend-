@@ -172,7 +172,7 @@ export const VideosPage: React.FC = () => {
 
         {/* Video Grid */}
         {loading ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 24 }}>
             {[1, 2, 3].map(i => (
               <div key={i} style={{ height: 280, borderRadius: 16, background: '#E8F0FC', animation: 'pulse 1.5s infinite' }} />
             ))}
@@ -184,7 +184,7 @@ export const VideosPage: React.FC = () => {
             <p style={{ color: '#5A6A88' }}>Coaching staff will upload match highlights and training clips here soon.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 24 }}>
             {filtered.map(video => {
               const ytId = video.youtubeId || extractYoutubeId(video.url);
               const isUpload = video.videoType === 'upload' || (!ytId && !!video.url);

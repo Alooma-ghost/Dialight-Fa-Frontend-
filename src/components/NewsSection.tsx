@@ -138,7 +138,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
         ) : (
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))",
             gap: 32,
             marginBottom: 48,
           }}>
