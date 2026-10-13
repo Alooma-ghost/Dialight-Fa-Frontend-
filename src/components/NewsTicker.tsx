@@ -181,16 +181,8 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({ onSelectNews, onNavigate
         >
           <div
             onClick={(e) => e.stopPropagation()}
+            className="responsive-modal-panel"
             style={{
-              background: '#ffffff',
-              borderRadius: 20,
-              maxWidth: 540,
-              width: '100%',
-              padding: 28,
-              boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              position: 'relative',
               animation: 'slideUpModal 0.22s ease'
             }}
           >

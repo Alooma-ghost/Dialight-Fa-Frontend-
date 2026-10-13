@@ -85,21 +85,7 @@ export const VideosPage: React.FC = () => {
           <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 880, position: 'relative' }}>
             <button
               onClick={closeModal}
-              style={{
-                position: 'absolute',
-                top: -46,
-                right: 0,
-                width: 40,
-                height: 40,
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.15)',
-                color: '#fff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                border: 'none'
-              }}
+              className="video-modal-close"
               title="Close (Esc)"
             >
               <X size={22} />

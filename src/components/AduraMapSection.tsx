@@ -26,8 +26,8 @@ export const AduraMapSection: React.FC = () => {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 28,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+          gap: 24,
           alignItems: 'stretch'
         }}>
           {/* Interactive Map Container */}

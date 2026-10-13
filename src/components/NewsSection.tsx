@@ -66,8 +66,8 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
         {/* News Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: 24
+          gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
+          gap: 20
         }}>
           {filteredNews.map(item => (
             <div
@@ -219,14 +219,9 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ onNavigate }) => {
         >
           <div
             onClick={e => e.stopPropagation()}
+            className="responsive-modal-panel"
             style={{
-              background: '#fff',
-              borderRadius: 20,
-              padding: '32px 28px',
-              maxWidth: 520,
-              width: '100%',
-              boxShadow: '0 24px 60px rgba(0,0,0,0.3)',
-              position: 'relative'
+              maxWidth: 520
             }}
           >
             <button

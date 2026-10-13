@@ -96,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               href={COACH_WHATSAPP_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-green"
+              className="btn btn-green nav-cta-whatsapp"
               title="Chat with Head Coach on WhatsApp"
             >
               <MessageCircle size={17} />
@@ -108,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>

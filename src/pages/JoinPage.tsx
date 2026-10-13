@@ -113,7 +113,7 @@ export const JoinPage: React.FC = () => {
           </div>
 
           {/* Right: Form */}
-          <div style={{ background: '#fff', borderRadius: 20, border: '1px solid #D6E0F2', padding: '36px 32px', boxShadow: '0 8px 32px rgba(10,35,82,0.07)' }}>
+          <div className="join-form-card">
             <h2 style={{ fontSize: 24, color: '#0A2352', marginBottom: 24 }}>Trial Application Form</h2>
 
             {errorMsg && (
