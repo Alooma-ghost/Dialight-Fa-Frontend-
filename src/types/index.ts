@@ -88,5 +88,6 @@ export interface NewsItem {
   location?: string;
   badge?: string;
   attachmentUrl?: string;
+  attachmentName?: string;
   createdAt?: string;
 }

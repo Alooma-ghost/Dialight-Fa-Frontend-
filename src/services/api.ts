@@ -16,7 +16,7 @@ export const SOCIAL_LINKS = {
   address: 'Adura Field, Alagbado, Lagos State, Nigeria'
 };
 
-const getBaseUrl = (): string => {
+export const getBaseUrl = (): string => {
   const saved = localStorage.getItem('dfa_api_url');
   if (saved) return saved.replace(/\/+$/, '');
   const envUrl = import.meta.env.VITE_API_URL;
@@ -25,6 +25,21 @@ const getBaseUrl = (): string => {
     return 'https://dialight-fa-backend.onrender.com';
   }
   return '';
+};
+
+export const resolveMediaUrl = (url?: string): string => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  const base = getBaseUrl();
+  return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
+export const isImageAttachment = (url?: string): boolean => {
+  if (!url) return false;
+  const clean = url.split('?')[0].split('#')[0].toLowerCase();
+  return /\.(jpeg|jpg|png|webp|gif|svg|avif)$/.test(clean) || url.startsWith('data:image/');
 };
 
 // Fallback – no demo data, all empty until admin posts real content
@@ -75,7 +90,8 @@ export const FALLBACK_NEWS: NewsItem[] = [
     date: 'Mon, 12 Oct 2026',
     time: '3:00 PM – 6:00 PM',
     location: 'Adura Field, Alagbado, Lagos',
-    badge: 'Official Schedule'
+    badge: 'Official Schedule',
+    attachmentUrl: '/alumni/fabiola-gideon.jpg'
   },
   {
     id: 'n2',
@@ -85,9 +101,9 @@ export const FALLBACK_NEWS: NewsItem[] = [
     date: 'Mon, 12 Oct 2026',
     time: '3:00 PM – 6:00 PM',
     location: 'Adura Field, Alagbado, Lagos',
-    badge: 'Trials Open'
+    badge: 'Trials Open',
+    attachmentUrl: '/alumni/opebi-ibrahim.jpg'
   },
-
   {
     id: 'n4',
     title: 'Academy Ground Location Guide: Under the Powerline, Adura Field',
