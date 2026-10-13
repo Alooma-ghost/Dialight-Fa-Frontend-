@@ -1637,16 +1637,25 @@ const NewsAdminSection: React.FC = () => {
                     {item.content && <div style={{ fontSize: 13, color: '#5A6A88', marginTop: 4 }}>{item.content}</div>}
                     <div style={{ fontSize: 11.5, color: '#8899B5', marginTop: 4 }}>📍 {item.location}</div>
                     {item.attachmentUrl && (
-                      <div style={{ fontSize: 12, color: '#1448A8', marginTop: 6, display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <Paperclip size={13} />
-                        <a
-                          href={item.attachmentUrl.startsWith('http') ? item.attachmentUrl : `${getBaseUrl()}${item.attachmentUrl}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#1448A8', textDecoration: 'underline', fontWeight: 600 }}
-                        >
-                          {item.attachmentName || item.attachmentUrl.split('/').pop() || 'Download Attachment'}
-                        </a>
+                      <div style={{ marginTop: 8 }}>
+                        {/\.(jpeg|jpg|png|webp|gif|svg|avif)$/i.test(item.attachmentUrl) && (
+                          <img
+                            src={item.attachmentUrl.startsWith('http') ? item.attachmentUrl : `${getBaseUrl()}${item.attachmentUrl}`}
+                            alt={item.title}
+                            style={{ width: 120, height: 80, objectFit: 'cover', borderRadius: 8, border: '1.5px solid #D6E0F2', display: 'block', marginBottom: 6 }}
+                          />
+                        )}
+                        <div style={{ fontSize: 12, color: '#1448A8', display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <Paperclip size={13} />
+                          <a
+                            href={item.attachmentUrl.startsWith('http') ? item.attachmentUrl : `${getBaseUrl()}${item.attachmentUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#1448A8', textDecoration: 'underline', fontWeight: 600 }}
+                          >
+                            {item.attachmentName || item.attachmentUrl.split('/').pop() || 'View Attachment'}
+                          </a>
+                        </div>
                       </div>
                     )}
                   </div>
