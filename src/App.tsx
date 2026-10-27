@@ -39,7 +39,7 @@ export const App: React.FC = () => {
     <>
       <Navbar currentPage={page} onNavigate={navigate} />
       <main style={{ minHeight: '100vh' }}>
-        {page === 'home'    && <HomePage match={liveMatch} onNavigate={navigate} />}
+        {page === 'home'    && <HomePage onNavigate={navigate} />}
         {page === 'matches' && <MatchesPage match={liveMatch} />}
         {page === 'squads'  && <SquadsPage onNavigate={navigate} />}
         {page === 'gallery' && <GalleryPage />}

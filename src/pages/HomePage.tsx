@@ -1,22 +1,129 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Hero } from '../components/Hero';
 import { SquadsSection } from '../components/SquadsSection';
 import { AlumniSection } from '../components/AlumniSection';
 import { NewsSection } from '../components/NewsSection';
 import { AduraMapSection } from '../components/AduraMapSection';
-import { Match } from '../types';
-import { COACH_WHATSAPP_LINK, SOCIAL_LINKS } from '../services/api';
-import { MessageCircle, MapPin, Calendar, Clock } from 'lucide-react';
+import { Fixture } from '../types';
+import { api, COACH_WHATSAPP_LINK, SOCIAL_LINKS } from '../services/api';
+import { MessageCircle, MapPin, Calendar, Clock, ChevronRight, Radio } from 'lucide-react';
 
 interface HomePageProps {
-  match: Match;
   onNavigate: (page: string) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ match, onNavigate }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
+  const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  const [loadingFixtures, setLoadingFixtures] = useState(true);
+
+  useEffect(() => {
+    api.getFixtures().then(data => {
+      setFixtures(data);
+      setLoadingFixtures(false);
+    });
+  }, []);
+
+  const upcoming = fixtures.filter(f => !f.isResult && f.status !== 'Completed');
+  const results  = fixtures.filter(f =>  f.isResult || f.status === 'Completed').slice(0, 3);
+
   return (
     <>
-      <Hero match={match} onNavigate={onNavigate} />
+      <Hero onNavigate={onNavigate} />
+
+      {/* ── MATCH FIXTURES QUICK-ACCESS SECTION ── */}
+      <section className="section" style={{ background: '#0A2352', padding: '64px 0' }}>
+        <div className="container">
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: 'rgba(255,255,255,0.12)', color: '#FFD700',
+                fontSize: 12, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase',
+                padding: '5px 14px', borderRadius: 99, marginBottom: 10
+              }}>
+                <Radio size={13} /> Live Fixtures &amp; Results
+              </span>
+              <h2 style={{ color: '#fff', fontSize: 'clamp(26px, 4vw, 38px)', margin: 0 }}>
+                Match Fixtures &amp; Results
+              </h2>
+              <p style={{ color: '#9FB0D0', fontSize: 14.5, marginTop: 8, margin: 0 }}>
+                All Dialight FA matches — updated pitchside by our coaching staff.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigate('matches')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '12px 22px', borderRadius: 12,
+                background: 'rgba(255,255,255,0.1)', border: '1.5px solid rgba(255,255,255,0.2)',
+                color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.18)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+            >
+              Full Schedule <ChevronRight size={16} />
+            </button>
+          </div>
+
+          {loadingFixtures ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{ height: 80, background: 'rgba(255,255,255,0.06)', borderRadius: 16, animation: 'pulse 1.5s infinite' }} />
+              ))}
+            </div>
+          ) : fixtures.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '48px 20px', background: 'rgba(255,255,255,0.06)', borderRadius: 20, border: '1.5px dashed rgba(255,255,255,0.15)' }}>
+              <div style={{ fontSize: 48, marginBottom: 14 }}>📅</div>
+              <h3 style={{ color: '#fff', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Season Fixtures Coming Soon</h3>
+              <p style={{ color: '#9FB0D0', fontSize: 14.5, maxWidth: 400, margin: '0 auto 20px' }}>
+                Match fixtures will appear here once the season schedule is confirmed by our coaching staff.
+              </p>
+              <button
+                onClick={() => onNavigate('matches')}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  padding: '12px 22px', borderRadius: 12,
+                  background: '#1448A8', color: '#fff', fontWeight: 700, fontSize: 14, cursor: 'pointer', border: 'none'
+                }}
+              >
+                Check Matches Page <ChevronRight size={16} />
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 16 }}>
+              {/* Upcoming Fixtures */}
+              {upcoming.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#5B86D6', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Calendar size={13} /> Upcoming
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {upcoming.slice(0, 4).map((f, idx) => (
+                      <HomeFixtureCard key={f.id || f._id || idx} fixture={f} isResult={false} onClick={() => onNavigate('matches')} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Recent Results */}
+              {results.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#4ADE80', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Clock size={13} /> Recent Results
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {results.map((f, idx) => (
+                      <HomeFixtureCard key={f.id || f._id || idx} fixture={f} isResult={true} onClick={() => onNavigate('matches')} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* About Strip */}
       <section className="section" style={{ background: '#F8FAFD', padding: '60px 0' }}>
@@ -227,3 +334,62 @@ export const HomePage: React.FC<HomePageProps> = ({ match, onNavigate }) => {
     </>
   );
 };
+
+/* ── Fixture card used inside the home fixtures section ── */
+const HomeFixtureCard: React.FC<{ fixture: Fixture; isResult: boolean; onClick: () => void }> = ({ fixture, isResult, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      background: 'rgba(255,255,255,0.07)',
+      border: '1px solid rgba(255,255,255,0.12)',
+      borderRadius: 14,
+      padding: '14px 18px',
+      cursor: 'pointer',
+      transition: 'background 0.2s, border-color 0.2s',
+    }}
+    onMouseEnter={e => {
+      e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
+      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.22)';
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
+      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
+    }}
+  >
+    {/* Competition & Status */}
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+      <span style={{ fontSize: 11, color: '#9FB0D0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+        {fixture.competition}
+      </span>
+      <span style={{
+        fontSize: 11, fontWeight: 800, padding: '2px 10px', borderRadius: 99,
+        background: isResult ? 'rgba(31,157,85,0.2)' : 'rgba(20,72,168,0.3)',
+        color: isResult ? '#4ADE80' : '#93BBFF'
+      }}>
+        {isResult ? (fixture.result || 'FT') : (fixture.status || 'Upcoming')}
+      </span>
+    </div>
+
+    {/* Teams & score/vs */}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+      <span style={{ fontWeight: 800, fontSize: 14.5, color: '#fff', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {fixture.homeTeam}
+      </span>
+      {isResult && fixture.result ? (
+        <span style={{ fontSize: 17, fontWeight: 900, color: '#FFD700', letterSpacing: '0.06em', flexShrink: 0 }}>{fixture.result}</span>
+      ) : (
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#B9C9EA', background: 'rgba(255,255,255,0.1)', padding: '3px 8px', borderRadius: 6, flexShrink: 0 }}>vs</span>
+      )}
+      <span style={{ fontWeight: 700, fontSize: 14, color: '#C5D6F5', flex: 1, textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {fixture.awayTeam}
+      </span>
+    </div>
+
+    {/* Date */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, color: '#9FB0D0', fontSize: 11.5 }}>
+      <Calendar size={11} style={{ flexShrink: 0 }} />
+      <span>{fixture.date}</span>
+      {fixture.time && <><span>·</span><span>{fixture.time}</span></>}
+    </div>
+  </div>
+);

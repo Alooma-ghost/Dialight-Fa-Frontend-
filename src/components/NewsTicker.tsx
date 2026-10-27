@@ -95,7 +95,7 @@ export const NewsTicker: React.FC<NewsTickerProps> = ({ onSelectNews, onNavigate
           <div className="ticker-lead">
             <span className="ticker-pulse-dot" />
             <Bell size={13} className="ticker-icon" />
-            <span className="ticker-label">ACADEMY NEWS</span>
+            <span className="ticker-label">NEWS &amp; FIXTURES</span>
           </div>
 
           {/* Live Lagos Clock on Desktop */}

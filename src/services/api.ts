@@ -57,7 +57,52 @@ export const FALLBACK_MATCH: Match = {
   note: ''
 };
 
-export const FALLBACK_FIXTURES: Fixture[] = [];
+export const FALLBACK_FIXTURES: Fixture[] = [
+  {
+    id: 'fix-1',
+    date: 'Sat, 18 Oct 2026',
+    time: '3:00 PM',
+    homeTeam: 'Dialight U17',
+    awayTeam: 'Synergy FA',
+    competition: 'Lagos Youth League',
+    status: 'Upcoming',
+    result: '3:00 PM',
+    isResult: false
+  },
+  {
+    id: 'fix-2',
+    date: 'Sun, 19 Oct 2026',
+    time: '4:00 PM',
+    homeTeam: 'Dialight U13',
+    awayTeam: 'Right2Win Academy',
+    competition: 'Grassroots Youth Cup',
+    status: 'Upcoming',
+    result: '4:00 PM',
+    isResult: false
+  },
+  {
+    id: 'fix-3',
+    date: 'Sat, 11 Oct 2026',
+    time: 'Full Time',
+    homeTeam: 'Dialight Free Age',
+    awayTeam: 'Alagbado All Stars',
+    competition: 'Academy Friendly',
+    status: 'Completed',
+    result: 'W 3–1',
+    isResult: true
+  },
+  {
+    id: 'fix-4',
+    date: 'Wed, 7 Oct 2026',
+    time: 'Full Time',
+    homeTeam: 'Dialight U17',
+    awayTeam: 'Ifo Youth FC',
+    competition: 'Pre-Season Friendly',
+    status: 'Completed',
+    result: 'W 2–0',
+    isResult: true
+  }
+];
 
 export const FALLBACK_VIDEOS: Video[] = [];
 
@@ -162,14 +207,79 @@ export const api = {
   },
 
   getNews: async (): Promise<NewsItem[]> => {
+    let newsList: NewsItem[] = [];
     try {
       const res = await fetch(`${getBaseUrl()}/api/news`);
       if (res.ok) {
         const list = await res.json();
-        if (list && list.length > 0) return list;
+        if (Array.isArray(list) && list.length > 0) newsList = list;
       }
     } catch (_) {}
-    return FALLBACK_NEWS;
+
+    if (newsList.length === 0) {
+      newsList = [...FALLBACK_NEWS];
+    }
+
+    // Ensure every match makes the news and ticker:
+    try {
+      const fixtures = await api.getFixtures();
+      if (Array.isArray(fixtures) && fixtures.length > 0) {
+        const matchNews: NewsItem[] = fixtures.map((f, i) => {
+          const isResult = f.isResult || f.status === 'Completed' || (f.result && /\d/.test(f.result));
+          const title = isResult
+            ? `Match Result: ${f.homeTeam} ${f.result ? `(${f.result})` : ''} vs ${f.awayTeam}`
+            : `Upcoming Match: ${f.homeTeam} vs ${f.awayTeam} · ${f.competition || 'Friendly'}`;
+          const content = isResult
+            ? `Full-time match update: ${f.homeTeam} vs ${f.awayTeam} in ${f.competition || 'Friendly Match'}. Result: ${f.result || 'Finished'}. Match played at Adura Field, Alagbado.`
+            : `Upcoming match fixture: ${f.homeTeam} vs ${f.awayTeam} scheduled for ${f.date} at ${f.time || '3:00 PM'} at Adura Field, Alagbado. Competition: ${f.competition || 'Friendly'}. Fans and scouts welcome!`;
+          return {
+            id: f.id || f._id || `fix-news-${i}`,
+            title,
+            content,
+            category: 'Match',
+            date: f.date,
+            time: f.time || (isResult ? 'FT' : '3:00 PM'),
+            location: 'Adura Field, Alagbado, Lagos',
+            badge: isResult ? 'Match Result' : 'Fixture'
+          };
+        });
+
+        // Insert match items that aren't already present by title
+        const existingTitles = new Set(newsList.map(n => n.title.toLowerCase().trim()));
+        for (const item of matchNews) {
+          if (!existingTitles.has(item.title.toLowerCase().trim())) {
+            newsList.push(item);
+            existingTitles.add(item.title.toLowerCase().trim());
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Also include active live match if one is ongoing
+    try {
+      const live = await api.getLiveMatch();
+      if (live && live.homeTeam && live.awayTeam && live.status !== 'No Match') {
+        const liveTitle = live.status === 'Live' || live.status === 'Half Time'
+          ? `🔴 LIVE SCORE: ${live.homeTeam} ${live.homeScore ?? 0} – ${live.awayScore ?? 0} ${live.awayTeam} (${live.minute || live.status})`
+          : `Match Score: ${live.homeTeam} ${live.homeScore ?? 0} – ${live.awayScore ?? 0} ${live.awayTeam} (${live.status})`;
+
+        const existingTitles = new Set(newsList.map(n => n.title.toLowerCase().trim()));
+        if (!existingTitles.has(liveTitle.toLowerCase().trim())) {
+          newsList.unshift({
+            id: 'live-score-news-item',
+            title: liveTitle,
+            content: `Live score update from Adura Field: ${live.homeTeam} vs ${live.awayTeam}. Competition: ${live.competition || 'Academy Match'}. Status: ${live.status} ${live.minute ? `(${live.minute})` : ''}. ${live.note || ''}`,
+            category: 'Match',
+            date: live.date || 'Matchday',
+            time: live.minute || live.status,
+            location: 'Adura Field, Alagbado, Lagos',
+            badge: live.status === 'Live' ? '🔴 LIVE' : 'Score Update'
+          });
+        }
+      }
+    } catch (_) {}
+
+    return newsList;
   },
 
   submitTrial: async (data: TrialRequest): Promise<{ success: boolean; error?: string }> => {
